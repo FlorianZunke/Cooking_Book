@@ -1,0 +1,195 @@
+<div class="editor-container">
+  <div class="header">
+    <h1>{{ isEditMode ? '✏️ Rezept bearbeiten' : '➕ Neues Rezept' }}</h1>
+  </div>
+
+  <form [formGroup]="recipeForm" (ngSubmit)="saveRecipe()" class="recipe-form">
+    <!-- Grundinfos -->
+    <section class="form-section">
+      <h2>Grundinfos</h2>
+      
+      <div class="form-group">
+        <label for="name">Rezeptname *</label>
+        <input
+          id="name"
+          type="text"
+          formControlName="name"
+          placeholder="z.B. Spaghetti Carbonara"
+          class="form-control"
+        />
+        <span class="error" *ngIf="recipeForm.get('name')?.errors?.['required']">
+          Rezeptname ist erforderlich
+        </span>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="category">Kategorie *</label>
+          <select id="category" formControlName="category" class="form-control">
+            <option *ngFor="let cat of categories" [value]="cat.value">
+              {{ cat.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="servings">Portionen *</label>
+          <input
+            id="servings"
+            type="number"
+            formControlName="servings"
+            min="1"
+            class="form-control"
+          />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="prepTime">Vorbereitungszeit (Min)</label>
+          <input
+            id="prepTime"
+            type="number"
+            formControlName="prepTime"
+            min="0"
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="cookTime">Kochzeit (Min)</label>
+          <input
+            id="cookTime"
+            type="number"
+            formControlName="cookTime"
+            min="0"
+            class="form-control"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Beschreibung</label>
+        <textarea
+          id="description"
+          formControlName="description"
+          placeholder="Kurze Beschreibung des Rezepts..."
+          rows="3"
+          class="form-control"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="image">Bild URL</label>
+        <input
+          id="image"
+          type="text"
+          formControlName="image"
+          placeholder="https://..."
+          class="form-control"
+        />
+      </div>
+    </section>
+
+    <!-- Zutaten -->
+    <section class="form-section">
+      <h2>Zutaten</h2>
+      
+      <div class="ingredients-list">
+        <div class="ingredient-item" *ngFor="let ing of ingredients; let i = index">
+          <div class="ingredient-row">
+            <input
+              [(ngModel)]="ing.name"
+              [ngModelOptions]="{ standalone: true }"
+              type="text"
+              placeholder="Zutat, z.B. Mehl"
+              class="form-control ingredient-name"
+            />
+            <input
+              [(ngModel)]="ing.amount"
+              [ngModelOptions]="{ standalone: true }"
+              type="number"
+              placeholder="0"
+              class="form-control ingredient-amount"
+            />
+            <select [(ngModel)]="ing.unit" [ngModelOptions]="{ standalone: true }" class="form-control ingredient-unit">
+              <option *ngFor="let u of units" [value]="u">{{ u }}</option>
+            </select>
+            <button type="button" (click)="removeIngredient(i)" class="btn btn-danger btn-small">
+              ✕
+            </button>
+          </div>
+
+          <div class="nutrition-row">
+            <input
+              [(ngModel)]="ing.calories"
+              [ngModelOptions]="{ standalone: true }"
+              type="number"
+              placeholder="Kalorien"
+              class="form-control nutrition-input"
+              title="Kalorien pro Einheit"
+            />
+            <input
+              [(ngModel)]="ing.protein"
+              [ngModelOptions]="{ standalone: true }"
+              type="number"
+              placeholder="Protein (g)"
+              class="form-control nutrition-input"
+            />
+            <input
+              [(ngModel)]="ing.carbs"
+              [ngModelOptions]="{ standalone: true }"
+              type="number"
+              placeholder="Kohlenhydrate (g)"
+              class="form-control nutrition-input"
+            />
+            <input
+              [(ngModel)]="ing.fat"
+              [ngModelOptions]="{ standalone: true }"
+              type="number"
+              placeholder="Fett (g)"
+              class="form-control nutrition-input"
+            />
+            <input
+              [(ngModel)]="ing.fiber"
+              [ngModelOptions]="{ standalone: true }"
+              type="number"
+              placeholder="Ballaststoffe (g)"
+              class="form-control nutrition-input"
+            />
+          </div>
+        </div>
+      </div>
+
+      <button type="button" (click)="addIngredient()" class="btn btn-secondary">
+        + Zutat hinzufügen
+      </button>
+    </section>
+
+    <!-- Anleitung -->
+    <section class="form-section">
+      <h2>Zubereitung</h2>
+      
+      <div class="form-group">
+        <label for="instructions">Anleitung</label>
+        <textarea
+          id="instructions"
+          formControlName="instructions"
+          placeholder="Schritt für Schritt Anleitung..."
+          rows="6"
+          class="form-control"
+        ></textarea>
+      </div>
+    </section>
+
+    <!-- Buttons -->
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary btn-large">
+        {{ isEditMode ? '💾 Aktualisieren' : '✅ Rezept erstellen' }}
+      </button>
+      <button type="button" (click)="cancel()" class="btn btn-secondary btn-large">
+        Abbrechen
+      </button>
+    </div>
+  </form>
+</div>

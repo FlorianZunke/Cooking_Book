@@ -1,0 +1,104 @@
+<div class="recipe-detail-container" *ngIf="recipe">
+  <button (click)="goBack()" class="btn-back">← Zurück</button>
+
+  <div class="recipe-header">
+    <div class="recipe-image">
+      <img [src]="recipe.image || '/placeholder-recipe.png'" [alt]="recipe.name" />
+    </div>
+
+    <div class="recipe-info">
+      <h1>{{ recipe.name }}</h1>
+      <p class="category">{{ recipe.category | uppercase }}</p>
+      
+      <div class="recipe-meta">
+        <span *ngIf="recipe.prepTime" class="meta-item">
+          ⏱️ Vorbereitung: {{ recipe.prepTime }} Min
+        </span>
+        <span *ngIf="recipe.cookTime" class="meta-item">
+          🍳 Kochzeit: {{ recipe.cookTime }} Min
+        </span>
+      </div>
+
+      <p class="description" *ngIf="recipe.description">{{ recipe.description }}</p>
+
+      <!-- Portionssteller -->
+      <div class="servings-control">
+        <label for="servings">Portionen:</label>
+        <div class="servings-input">
+          <button
+            (click)="servings = servings - 1"
+            [disabled]="servings <= 1"
+            class="btn-small"
+          >
+            −
+          </button>
+          <input
+            id="servings"
+            type="number"
+            [(ngModel)]="servings"
+            (change)="onServingsChange()"
+            min="0.5"
+            step="0.5"
+            class="servings-number"
+          />
+          <button (click)="servings = servings + 1" class="btn-small">
+            +
+          </button>
+        </div>
+      </div>
+
+      <div class="recipe-actions">
+        <button (click)="editRecipe()" class="btn btn-primary">✏️ Bearbeiten</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nährwerte -->
+  <div class="nutrition-section" *ngIf="nutrition">
+    <h2>Nährwerte (für {{ servings }} {{ servings === 1 ? 'Portion' : 'Portionen' }})</h2>
+    <div class="nutrition-grid">
+      <div class="nutrition-card">
+        <div class="nutrition-value">{{ nutrition.calories }}</div>
+        <div class="nutrition-label">Kalorien <span class="unit">kcal</span></div>
+      </div>
+      <div class="nutrition-card">
+        <div class="nutrition-value">{{ nutrition.protein }}</div>
+        <div class="nutrition-label">Protein <span class="unit">g</span></div>
+      </div>
+      <div class="nutrition-card">
+        <div class="nutrition-value">{{ nutrition.carbs }}</div>
+        <div class="nutrition-label">Kohlenhydrate <span class="unit">g</span></div>
+      </div>
+      <div class="nutrition-card">
+        <div class="nutrition-value">{{ nutrition.fat }}</div>
+        <div class="nutrition-label">Fett <span class="unit">g</span></div>
+      </div>
+      <div class="nutrition-card">
+        <div class="nutrition-value">{{ nutrition.fiber }}</div>
+        <div class="nutrition-label">Ballaststoffe <span class="unit">g</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zutaten -->
+  <div class="ingredients-section">
+    <h2>Zutaten (für {{ servings }} {{ servings === 1 ? 'Portion' : 'Portionen' }})</h2>
+    <ul class="ingredients-list">
+      <li *ngFor="let ing of recipe.ingredients" class="ingredient-item">
+        <span class="ingredient-amount">
+          {{ (ing.amount * servings / recipe.servings) | number: '1.1-2' }}
+        </span>
+        <span class="ingredient-unit">{{ ing.unit }}</span>
+        <span class="ingredient-name">{{ ing.name }}</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Anleitung -->
+  <div class="instructions-section" *ngIf="recipe.instructions">
+    <h2>Zubereitung</h2>
+    <div class="instructions-text">
+      {{ recipe.instructions }}
+    </div>
+  </div>
+</div>

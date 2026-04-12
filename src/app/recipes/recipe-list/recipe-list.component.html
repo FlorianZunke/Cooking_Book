@@ -1,0 +1,53 @@
+<div class="recipe-list-container">
+  <div class="header">
+    <h1>📚 Meine Rezepte</h1>
+    <a routerLink="/recipes/new" class="btn btn-primary">+ Neues Rezept</a>
+  </div>
+
+  <div class="filters">
+    <h3>Kategorie:</h3>
+    <div class="category-buttons">
+      <button
+        *ngFor="let cat of categories"
+        [class.active]="selectedCategory === cat.value"
+        (click)="selectedCategory = cat.value"
+        class="btn btn-secondary"
+      >
+        {{ cat.label }}
+      </button>
+    </div>
+  </div>
+
+  <div class="recipes-info">
+    <p>{{ filteredRecipes.length }} Rezept{{ filteredRecipes.length !== 1 ? 'e' : '' }} gefunden</p>
+  </div>
+
+  <div class="recipes-grid" *ngIf="filteredRecipes.length > 0; else noRecipes">
+    <div class="recipe-card" *ngFor="let recipe of filteredRecipes">
+      <div class="recipe-image">
+        <img [src]="recipe.image || '/placeholder-recipe.png'" [alt]="recipe.name" />
+      </div>
+      <div class="recipe-content">
+        <h3>{{ recipe.name }}</h3>
+        <p class="category">{{ getCategoryLabel(recipe.category) }}</p>
+        <p class="description" *ngIf="recipe.description">{{ recipe.description }}</p>
+        <div class="recipe-meta">
+          <span *ngIf="recipe.prepTime" class="meta-item">⏱️ {{ recipe.prepTime }}min</span>
+          <span *ngIf="recipe.servings" class="meta-item">🍽️ {{ recipe.servings }} Portionen</span>
+        </div>
+        <div class="actions">
+          <a [routerLink]="['/recipes', recipe.id]" class="btn btn-small">Ansehen</a>
+          <a [routerLink]="['/recipes', recipe.id, 'edit']" class="btn btn-small">Bearbeiten</a>
+          <button (click)="deleteRecipe(recipe.id)" class="btn btn-small btn-danger">Löschen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noRecipes>
+    <div class="empty-state">
+      <p>Noch keine Rezepte in dieser Kategorie. 👨‍🍳</p>
+      <a routerLink="/recipes/new" class="btn btn-primary">Erstes Rezept hinzufügen</a>
+    </div>
+  </ng-template>
+</div>
