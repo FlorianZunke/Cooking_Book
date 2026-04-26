@@ -1,1 +1,141 @@
-<p>auth works!</p>
+<!-- Auth-Komponente Template
+     Zeigt Login- oder Registrierungsformular basierend auf isLoginMode -->
+
+<div class="auth-container">
+  <div class="auth-card">
+    <!-- Header mit Logo/Titel -->
+    <div class="auth-header">
+      <h1>Cooking Book</h1>
+      <p>{{ isLoginMode ? 'Melde dich an' : 'Erstelle ein Konto' }}</p>
+    </div>
+
+    <!-- Fehler-Meldung -->
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Login-Formular -->
+    <form *ngIf="isLoginMode" [formGroup]="loginForm" (ngSubmit)="onLogin()" class="auth-form">
+      <!-- E-Mail Feld -->
+      <div class="form-group">
+        <label for="loginEmail">E-Mail</label>
+        <input
+          id="loginEmail"
+          type="email"
+          formControlName="email"
+          placeholder="deine@email.com"
+          class="form-control"
+          [class.error]="loginEmail?.invalid && loginEmail?.touched">
+        <div *ngIf="loginEmail?.invalid && loginEmail?.touched" class="field-error">
+          <span *ngIf="loginEmail?.errors?.['required']">E-Mail ist erforderlich</span>
+          <span *ngIf="loginEmail?.errors?.['email']">Ungültige E-Mail-Adresse</span>
+        </div>
+      </div>
+
+      <!-- Passwort Feld -->
+      <div class="form-group">
+        <label for="loginPassword">Passwort</label>
+        <input
+          id="loginPassword"
+          type="password"
+          formControlName="password"
+          placeholder="Dein Passwort"
+          class="form-control"
+          [class.error]="loginPassword?.invalid && loginPassword?.touched">
+        <div *ngIf="loginPassword?.invalid && loginPassword?.touched" class="field-error">
+          <span *ngIf="loginPassword?.errors?.['required']">Passwort ist erforderlich</span>
+          <span *ngIf="loginPassword?.errors?.['minlength']">Mindestens 6 Zeichen</span>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+        <span *ngIf="isLoading">Lädt...</span>
+        <span *ngIf="!isLoading">Anmelden</span>
+      </button>
+    </form>
+
+    <!-- Registrierungs-Formular -->
+    <form *ngIf="!isLoginMode" [formGroup]="registerForm" (ngSubmit)="onRegister()" class="auth-form">
+      <!-- Name Feld -->
+      <div class="form-group">
+        <label for="registerName">Vollständiger Name</label>
+        <input
+          id="registerName"
+          type="text"
+          formControlName="name"
+          placeholder="Max Mustermann"
+          class="form-control"
+          [class.error]="registerName?.invalid && registerName?.touched">
+        <div *ngIf="registerName?.invalid && registerName?.touched" class="field-error">
+          <span *ngIf="registerName?.errors?.['required']">Name ist erforderlich</span>
+          <span *ngIf="registerName?.errors?.['minlength']">Mindestens 2 Zeichen</span>
+        </div>
+      </div>
+
+      <!-- E-Mail Feld -->
+      <div class="form-group">
+        <label for="registerEmail">E-Mail</label>
+        <input
+          id="registerEmail"
+          type="email"
+          formControlName="email"
+          placeholder="deine@email.com"
+          class="form-control"
+          [class.error]="registerEmail?.invalid && registerEmail?.touched">
+        <div *ngIf="registerEmail?.invalid && registerEmail?.touched" class="field-error">
+          <span *ngIf="registerEmail?.errors?.['required']">E-Mail ist erforderlich</span>
+          <span *ngIf="registerEmail?.errors?.['email']">Ungültige E-Mail-Adresse</span>
+        </div>
+      </div>
+
+      <!-- Passwort Feld -->
+      <div class="form-group">
+        <label for="registerPassword">Passwort</label>
+        <input
+          id="registerPassword"
+          type="password"
+          formControlName="password"
+          placeholder="Mindestens 6 Zeichen"
+          class="form-control"
+          [class.error]="registerPassword?.invalid && registerPassword?.touched">
+        <div *ngIf="registerPassword?.invalid && registerPassword?.touched" class="field-error">
+          <span *ngIf="registerPassword?.errors?.['required']">Passwort ist erforderlich</span>
+          <span *ngIf="registerPassword?.errors?.['minlength']">Mindestens 6 Zeichen</span>
+        </div>
+      </div>
+
+      <!-- Passwort bestätigen Feld -->
+      <div class="form-group">
+        <label for="registerConfirmPassword">Passwort bestätigen</label>
+        <input
+          id="registerConfirmPassword"
+          type="password"
+          formControlName="confirmPassword"
+          placeholder="Passwort wiederholen"
+          class="form-control"
+          [class.error]="(registerConfirmPassword?.invalid && registerConfirmPassword?.touched) || registerForm.errors?.['passwordMismatch']">
+        <div *ngIf="(registerConfirmPassword?.invalid && registerConfirmPassword?.touched) || registerForm.errors?.['passwordMismatch']" class="field-error">
+          <span *ngIf="registerConfirmPassword?.errors?.['required']">Bestätigung ist erforderlich</span>
+          <span *ngIf="registerForm.errors?.['passwordMismatch']">Passwörter stimmen nicht überein</span>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+        <span *ngIf="isLoading">Lädt...</span>
+        <span *ngIf="!isLoading">Registrieren</span>
+      </button>
+    </form>
+
+    <!-- Toggle zwischen Login/Register -->
+    <div class="auth-toggle">
+      <p>
+        {{ isLoginMode ? 'Noch kein Konto?' : 'Bereits ein Konto?' }}
+        <a (click)="toggleMode(); $event.preventDefault()" class="toggle-link">
+          {{ isLoginMode ? 'Jetzt registrieren' : 'Hier anmelden' }}
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
