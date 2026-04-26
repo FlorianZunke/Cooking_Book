@@ -1,6 +1,7 @@
 
 <div class="app-container">
-  <nav class="navbar">
+  <!-- Navigation nur anzeigen, wenn User eingeloggt ist -->
+  <nav class="navbar" *ngIf="isLoggedIn()">
     <div class="nav-content">
       <a routerLink="/" class="logo">
         👨‍🍳 Cooking Book
@@ -8,6 +9,8 @@
       <ul class="nav-menu">
         <li><a routerLink="/recipes" routerLinkActive="active">Rezepte</a></li>
         <li><a routerLink="/recipes/new" routerLinkActive="active" class="btn-new">+ Neues Rezept</a></li>
+        <!-- Logout-Button -->
+        <li><button (click)="logout()" class="btn-logout">Logout</button></li>
       </ul>
     </div>
   </nav>

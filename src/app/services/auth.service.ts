@@ -5,6 +5,11 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { User, LoginRequest, RegisterRequest, LoginResponse, RegisterResponse } from '../models/auth.model';
 
+interface StoredAuthUser {
+  user: User;
+  password: string;
+}
+
 @Injectable({
   providedIn: 'root' // Singleton-Service, verfügbar in der gesamten App
 })
@@ -22,7 +27,7 @@ export class AuthService {
 
   // In-Memory Speicher für User (ersetzt localStorage)
   // Einfache Map für Demo-Zwecke - in Produktion würde dies ein Backend sein
-  private users = new Map<string, User>();
+  private users = new Map<string, StoredAuthUser>();
 
   constructor() {
     // Kein Laden aus localStorage - alles startet leer
@@ -35,24 +40,24 @@ export class AuthService {
     await this.delay(500);
 
     // Finde User mit E-Mail
-    const user = Array.from(this.users.values()).find(u => u.email === request.email);
+    const authEntry = Array.from(this.users.values()).find(entry => entry.user.email === request.email);
 
-    if (!user) {
+    if (!authEntry) {
       throw new Error('Benutzer nicht gefunden');
     }
 
-    // Dummy-Passwort-Check (nicht sicher!)
-    if (request.password !== 'password123') {
+    // Passwort-Check gegen gespeicherte Daten
+    if (request.password !== authEntry.password) {
       throw new Error('Falsches Passwort');
     }
 
     // Generiere einfachen Token
-    const token = this.generateToken(user);
+    const token = this.generateToken(authEntry.user);
 
     // Setze aktuellen User (Signal wird automatisch aktualisiert)
-    this.currentUserSignal.set(user);
+    this.currentUserSignal.set(authEntry.user);
 
-    return { user, token };
+    return { user: authEntry.user, token };
   }
 
   // Registrierungs-Methode
@@ -60,7 +65,7 @@ export class AuthService {
     await this.delay(500);
 
     // Prüfe, ob E-Mail bereits existiert
-    const existingUser = Array.from(this.users.values()).find(u => u.email === request.email);
+    const existingUser = Array.from(this.users.values()).find(entry => entry.user.email === request.email);
     if (existingUser) {
       throw new Error('E-Mail bereits registriert');
     }
@@ -73,14 +78,15 @@ export class AuthService {
       createdAt: new Date().toISOString()
     };
 
-    // Speichere in In-Memory Map
-    this.users.set(newUser.id, newUser);
+    // Speichere in In-Memory Map inklusive Passwort
+    this.users.set(newUser.id, {
+      user: newUser,
+      password: request.password
+    });
 
-    // Generiere Token und setze als aktuellen User
-    const token = this.generateToken(newUser);
-    this.currentUserSignal.set(newUser);
-
-    return { user: newUser, token };
+    // Registriere den User, aber logge ihn nicht automatisch ein.
+    // Dadurch bleibt der Header verborgen, bis der Nutzer sich tatsächlich einloggt.
+    return { user: newUser };
   }
 
   // Logout-Methode
